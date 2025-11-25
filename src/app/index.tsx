@@ -1,6 +1,8 @@
 import { router } from "expo-router";
 import { Button, Text, View } from "react-native";
 
+import { fontFamily } from "@/theme/fontFamily";
+
 export default function Index() {
   return (
     <View
@@ -10,7 +12,7 @@ export default function Index() {
         gap: 16,
       }}
     >
-      <Text>Olá, Expo Router!</Text>
+      <Text style={{ fontFamily: fontFamily.bold }}>Olá, Expo Router!</Text>
 
       <Button title="Nova meta" onPress={() => router.navigate("/target")} />
 
