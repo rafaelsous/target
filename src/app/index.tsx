@@ -9,7 +9,7 @@ export default function Index() {
         flex: 1,
       }}
     >
-      <HomeHeader />
+      <HomeHeader data={{ total: "R$ 22.549,76" }} />
     </View>
   );
 }

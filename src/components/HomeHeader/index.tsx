@@ -3,8 +3,17 @@ import { LinearGradient } from "expo-linear-gradient";
 
 import { styles } from "./styles";
 import { colors } from "@/theme/colors";
+import { Separator } from "../Separator";
 
-export function HomeHeader() {
+export type HomeHeaderProps = {
+  total: string;
+};
+
+type Props = {
+  data: HomeHeaderProps;
+};
+
+export function HomeHeader({ data }: Readonly<Props>) {
   return (
     <LinearGradient
       style={styles.container}
@@ -12,7 +21,10 @@ export function HomeHeader() {
     >
       <View>
         <Text style={styles.label}>Total que você possui</Text>
+        <Text style={styles.total}>{data.total}</Text>
       </View>
+
+      <Separator color={colors.blue[400]} />
     </LinearGradient>
   );
 }
