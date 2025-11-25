@@ -10,11 +10,16 @@ export default function Index() {
         flex: 1,
         justifyContent: "center",
         backgroundColor: colors.white,
+        gap: 16,
       }}
     >
       <Text>Olá, Expo Router!</Text>
 
       <Button title="Nova meta" onPress={() => router.navigate("/target")} />
+      <Button
+        title="Transação"
+        onPress={() => router.navigate("/transaction/1207")}
+      />
     </View>
   );
 }
