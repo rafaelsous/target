@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
     color: colors.white,
     lineHeight: 24,
   },
-  labelLeft: {
+  labelRight: {
     justifyContent: "flex-end",
   },
   value: {

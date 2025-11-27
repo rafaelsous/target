@@ -4,8 +4,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { styles } from "./styles";
 import { colors } from "@/theme/colors";
 
-import { Summary, SummaryProps } from "../Summary";
 import { Separator } from "../Separator";
+import { Summary, SummaryProps } from "../Summary";
 
 export type HomeHeaderProps = {
   total: string;
@@ -39,7 +39,7 @@ export function HomeHeader({ data }: Readonly<Props>) {
         <Summary
           icon={{ name: "arrow-downward", color: colors.red[400] }}
           data={data.output}
-          isLeft
+          isRight
         />
       </View>
     </LinearGradient>
