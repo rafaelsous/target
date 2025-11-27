@@ -25,8 +25,8 @@ export function Option({
     >
       <MaterialIcons
         name={icon}
-        size={24}
-        color={isSelected ? colors.white : colors.gray[300]}
+        size={20}
+        color={isSelected ? colors.white : colors.gray[500]}
       />
 
       <Text style={[styles.title, isSelected && { color: colors.white }]}>
