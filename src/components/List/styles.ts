@@ -19,6 +19,7 @@ export const styles = StyleSheet.create({
     color: colors.black,
   },
   empty: {
+    paddingTop: 16,
     fontFamily: fontFamily.regular,
     fontSize: 14,
     color: colors.gray[600],
