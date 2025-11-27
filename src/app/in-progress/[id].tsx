@@ -47,8 +47,8 @@ export default function InProgress() {
       <PageHeader
         title="Apple Watch"
         rightButton={{
-          onPress: () => {},
           icon: "edit",
+          onPress: () => router.navigate("/target"),
         }}
       />
 
