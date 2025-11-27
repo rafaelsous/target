@@ -6,7 +6,6 @@ export const styles = StyleSheet.create({
   container: {
     width: "100%",
     paddingTop: 32,
-    // backgroundColor: "gray",
   },
   header: {
     marginBottom: 32,
