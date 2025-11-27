@@ -1,13 +1,34 @@
 import { View } from "react-native";
 
+import { TransactionTypes } from "@/utils/TransactionTypes";
+
+import { List } from "@/components/List";
+import { Button } from "@/components/Button";
 import { Progress } from "@/components/Progress";
 import { PageHeader } from "@/components/PageHeader";
+import { Transaction, TransactionProps } from "@/components/Transaction";
 
-const data = {
+const progress = {
   current: "R$ 580,00",
   target: "R$ 1.790,00",
   percentage: 25,
 };
+
+const transactions: TransactionProps[] = [
+  {
+    id: Math.random().toString(36).substring(2),
+    type: TransactionTypes.OUTPUT,
+    value: "R$ 20,00",
+    date: "27/11/2024",
+  },
+  {
+    id: Math.random().toString(36).substring(2),
+    type: TransactionTypes.INPUT,
+    value: "R$ 300,00",
+    date: "27/11/2024",
+    description: "CDB de 110% no banco XPTO",
+  },
+];
 
 export default function InProgress() {
   return (
@@ -26,7 +47,23 @@ export default function InProgress() {
         }}
       />
 
-      <Progress data={data} />
+      <Progress data={progress} />
+
+      <List
+        title="Transações"
+        data={transactions}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <Transaction
+            data={item}
+            onRemove={() => console.log("Removing transaction...")}
+          />
+        )}
+        showsHorizontalScrollIndicator={false}
+        emptyMessage="Nenuma transação cadastrada ainda."
+      />
+
+      <Button title="Nova transação" />
     </View>
   );
 }

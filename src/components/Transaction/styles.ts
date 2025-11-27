@@ -1,29 +1,25 @@
-import { StyleSheet } from "react-native";
-
 import { colors, fontFamily } from "@/theme";
+import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   container: {
-    width: "100%",
     height: 72,
-    paddingTop: 16,
-    paddingBottom: 16,
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 7,
   },
-  content: {
+  info: {
     flex: 1,
     gap: 7,
   },
-  name: {
+  value: {
     fontFamily: fontFamily.medium,
     fontSize: 14,
     color: colors.black,
   },
-  status: {
+  description: {
     fontFamily: fontFamily.regular,
-    fontSize: 10,
-    color: colors.gray[600],
+    fontSize: 12,
+    color: colors.gray[500],
   },
 });
