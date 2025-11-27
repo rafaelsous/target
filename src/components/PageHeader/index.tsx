@@ -23,7 +23,7 @@ export function PageHeader({ title, subtitle, rightButton }: Readonly<Props>) {
         </TouchableOpacity>
 
         {rightButton && (
-          <TouchableOpacity onPress={rightButton.onPress}>
+          <TouchableOpacity activeOpacity={0.7} onPress={rightButton.onPress}>
             <MaterialIcons
               name={rightButton.icon}
               size={24}
