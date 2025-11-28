@@ -1,8 +1,18 @@
 import { useSQLiteContext } from "expo-sqlite";
 
-type TargetCreate = {
+export type TargetCreate = {
   name: string;
   amount: number;
+};
+
+export type TargetResponse = {
+  id: number;
+  name: string;
+  amount: number;
+  current: number;
+  percentage: number;
+  created_at: Date;
+  updated_at: Date;
 };
 
 export function useTargetDatabase() {
@@ -19,7 +29,19 @@ export function useTargetDatabase() {
     });
   }
 
+  function listBySavedValue() {
+    return database.getAllAsync<TargetResponse>(`
+      SELECT
+        targets.id,
+        targets.name,
+        targets.amount
+      FROM targets
+
+    `);
+  }
+
   return {
     create,
+    listBySavedValue,
   };
 }
