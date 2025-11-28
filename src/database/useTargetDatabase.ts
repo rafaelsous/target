@@ -46,8 +46,8 @@ export function useTargetDatabase() {
     `);
   }
 
-  function show(id: number) {
-    return database.getFirstAsync<TargetResponse>(`
+  async function show(id: number): Promise<TargetResponse> {
+    const response = await database.getFirstAsync<TargetResponse>(`
       SELECT
         targets.id,
         targets.name,
@@ -60,6 +60,14 @@ export function useTargetDatabase() {
       LEFT JOIN transactions ON targets.id = transactions.target_id
       WHERE targets.id = ${id}
     `);
+
+    if (!response) {
+      throw new Error(
+        `Não foi possível carregar os detalhes da meta de ID: ${id}`
+      );
+    }
+
+    return response;
   }
 
   return {

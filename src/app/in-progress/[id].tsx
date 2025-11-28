@@ -1,10 +1,15 @@
-import { View } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
+import { Alert, View } from "react-native";
+import { useCallback, useState } from "react";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 
 import { TransactionTypes } from "@/utils/TransactionTypes";
+import { numberToCurrency } from "@/utils/numberToCurrency";
+
+import { useTargetDatabase } from "@/database/useTargetDatabase";
 
 import { List } from "@/components/List";
 import { Button } from "@/components/Button";
+import { Loading } from "@/components/Loading";
 import { Progress } from "@/components/Progress";
 import { PageHeader } from "@/components/PageHeader";
 import { Transaction, TransactionProps } from "@/components/Transaction";
@@ -32,9 +37,50 @@ const transactions: TransactionProps[] = [
 ];
 
 export default function InProgress() {
+  const [details, setDetails] = useState({
+    name: "",
+    current: "R$ 0,00",
+    target: "R$ 0,00",
+    percentage: 0,
+  });
+  const [isFetching, setIsFetching] = useState(true);
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  console.log(id);
+  const targetsDatabase = useTargetDatabase();
+
+  async function fetchDetails() {
+    try {
+      const response = await targetsDatabase.show(Number(id));
+
+      setDetails({
+        name: response.name,
+        current: numberToCurrency(response.current),
+        percentage: response.percentage,
+        target: numberToCurrency(response.amount),
+      });
+    } catch (error) {
+      Alert.alert("Erro", "Não possível carregar detalhes da meta.");
+      console.log(error);
+    } finally {
+      setIsFetching(false);
+    }
+  }
+
+  async function fetchData() {
+    const fetchDetailsPromise = fetchDetails();
+
+    await Promise.all([fetchDetailsPromise]);
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
+
+  if (isFetching) {
+    return <Loading />;
+  }
 
   return (
     <View
@@ -45,14 +91,14 @@ export default function InProgress() {
       }}
     >
       <PageHeader
-        title="Apple Watch"
+        title={details.name}
         rightButton={{
           icon: "edit",
           onPress: () => router.navigate("/target"),
         }}
       />
 
-      <Progress data={progress} />
+      <Progress data={details} />
 
       <List
         title="Transações"
