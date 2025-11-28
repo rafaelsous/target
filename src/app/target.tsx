@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 
@@ -6,13 +6,16 @@ import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
 import { PageHeader } from "@/components/PageHeader";
 import { CurrencyInput } from "@/components/CurrencyInput";
+
 import { useTargetDatabase } from "@/database/useTargetDatabase";
 
 export default function Target() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [name, setName] = useState("");
   const [amount, setAmount] = useState<number>(0);
+
   const { id } = useLocalSearchParams<{ id?: string }>();
+
   const targetDatabase = useTargetDatabase();
 
   function handleSave() {
@@ -47,6 +50,23 @@ export default function Target() {
       setIsProcessing(false);
     }
   }
+
+  async function fetchDetails(id: number) {
+    try {
+      const response = await targetDatabase.show(id);
+      setName(response.name);
+      setAmount(response.amount);
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível carregar os detalhes da meta.");
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    if (id) {
+      fetchDetails(Number(id));
+    }
+  }, [id]);
 
   return (
     <View
