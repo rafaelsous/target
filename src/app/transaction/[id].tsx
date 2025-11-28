@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View } from "react-native";
+import { Alert, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 
 import { Input } from "@/components/Input";
@@ -10,16 +10,45 @@ import { TransactionType } from "@/components/TransactionType";
 
 import { TransactionTypes } from "@/utils/TransactionTypes";
 
+import { useTransactionDatabase } from "@/database/useTransactionDatabase";
+
 export default function Transaction() {
   const [type, setType] = useState(TransactionTypes.INPUT);
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const [isCreating, setIsCreating] = useState(false);
+  const [amount, setAmount] = useState(0);
+  const [observation, setObservation] = useState("");
 
-  function handleToggleType() {
-    setType(
-      type === TransactionTypes.INPUT
-        ? TransactionTypes.OUTPUT
-        : TransactionTypes.INPUT
-    );
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const transactionDatabase = useTransactionDatabase();
+
+  async function handleCreate() {
+    try {
+      console.log(amount);
+      if (amount <= 0) {
+        return Alert.alert(
+          "Nova Transação",
+          "Informe um valor maior que zero.",
+          [{ text: "Ok" }]
+        );
+      }
+
+      setIsCreating(true);
+
+      await transactionDatabase.create({
+        target_id: Number(id),
+        amount: type === TransactionTypes.OUTPUT ? amount * -1 : amount,
+        observation,
+      });
+
+      Alert.alert("Sucesso", "Nova transação cadastrada com sucesso!", [
+        { text: "Ok", onPress: () => router.back() },
+      ]);
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível salvar a transação.");
+      console.log(error);
+    } finally {
+      setIsCreating(false);
+    }
   }
 
   return (
@@ -38,14 +67,23 @@ export default function Transaction() {
       <View style={{ marginTop: 32, gap: 20 }}>
         <TransactionType selected={type} onChange={setType} />
 
-        <CurrencyInput label="Valor (R$)" value={0} />
+        <CurrencyInput
+          label="Valor (R$)"
+          value={amount}
+          onChangeValue={(value) => setAmount(value ?? 0)}
+        />
 
         <Input
           label="Motivo (opcional)"
           placeholder="Ex: Investir em CDB de 110% no banco XPTO"
+          onChangeText={setObservation}
         />
 
-        <Button title="Salvar" onPress={() => {}} />
+        <Button
+          title="Salvar"
+          onPress={handleCreate}
+          isProcessing={isCreating}
+        />
       </View>
     </View>
   );
