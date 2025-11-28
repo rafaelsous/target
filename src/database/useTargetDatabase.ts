@@ -74,6 +74,10 @@ export function useTargetDatabase() {
     return response;
   }
 
+  async function remove(id: number) {
+    await database.runAsync("DELETE FROM targets WHERE id = ?", id);
+  }
+
   async function update(data: TargetUpdate) {
     const statement = await database.prepareAsync(`
        UPDATE targets SET
@@ -93,6 +97,7 @@ export function useTargetDatabase() {
     show,
     create,
     update,
+    remove,
     listBySavedValue,
   };
 }
