@@ -14,6 +14,7 @@ import { Loading } from "@/components/Loading";
 import { Progress } from "@/components/Progress";
 import { PageHeader } from "@/components/PageHeader";
 import { Transaction, TransactionProps } from "@/components/Transaction";
+import { formatDatetime } from "@/utils/formatDatetime";
 
 export default function InProgress() {
   const [details, setDetails] = useState({
@@ -60,7 +61,7 @@ export default function InProgress() {
           type:
             item.amount > 0 ? TransactionTypes.INPUT : TransactionTypes.OUTPUT,
           value: numberToCurrency(item.amount),
-          date: String(item.created_at),
+          date: formatDatetime(item.created_at, "DD/MM/YYYY [às] HH:mm"),
           description: item.observation,
         }))
       );
