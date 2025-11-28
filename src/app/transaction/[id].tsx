@@ -23,7 +23,6 @@ export default function Transaction() {
 
   async function handleCreate() {
     try {
-      console.log(amount);
       if (amount <= 0) {
         return Alert.alert(
           "Nova Transação",

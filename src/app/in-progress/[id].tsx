@@ -80,6 +80,25 @@ export default function InProgress() {
     await Promise.all([fetchDetailsPromise, fetchTransactionsPromise]);
   }
 
+  function handleTransactionRemove(transactionId: string) {
+    Alert.alert("Remover Transação", "Deseja realmente remover a transação?", [
+      { text: "Não", style: "cancel" },
+      { text: "Sim", onPress: () => transactionRemove(transactionId) },
+    ]);
+  }
+
+  async function transactionRemove(transactionId: string) {
+    try {
+      await transactionsDatabase.remove(Number(transactionId));
+      fetchData();
+
+      Alert.alert("Sucesso", "Transação removida com sucesso!");
+    } catch (error) {
+      Alert.alert("Erro", "Não possível remover a transação.");
+      console.log(error);
+    }
+  }
+
   useFocusEffect(
     useCallback(() => {
       fetchData();
@@ -115,7 +134,7 @@ export default function InProgress() {
         renderItem={({ item }) => (
           <Transaction
             data={item}
-            onRemove={() => console.log("Removing transaction...")}
+            onRemove={() => handleTransactionRemove(item.id)}
           />
         )}
         showsHorizontalScrollIndicator={false}
