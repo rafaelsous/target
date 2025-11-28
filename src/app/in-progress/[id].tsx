@@ -6,6 +6,7 @@ import { TransactionTypes } from "@/utils/TransactionTypes";
 import { numberToCurrency } from "@/utils/numberToCurrency";
 
 import { useTargetDatabase } from "@/database/useTargetDatabase";
+import { useTransactionDatabase } from "@/database/useTransactionDatabase";
 
 import { List } from "@/components/List";
 import { Button } from "@/components/Button";
@@ -14,28 +15,6 @@ import { Progress } from "@/components/Progress";
 import { PageHeader } from "@/components/PageHeader";
 import { Transaction, TransactionProps } from "@/components/Transaction";
 
-const progress = {
-  current: "R$ 580,00",
-  target: "R$ 1.790,00",
-  percentage: 25,
-};
-
-const transactions: TransactionProps[] = [
-  {
-    id: Math.random().toString(36).substring(2),
-    type: TransactionTypes.OUTPUT,
-    value: "R$ 20,00",
-    date: "27/11/2024",
-  },
-  {
-    id: Math.random().toString(36).substring(2),
-    type: TransactionTypes.INPUT,
-    value: "R$ 300,00",
-    date: "27/11/2024",
-    description: "CDB de 110% no banco XPTO",
-  },
-];
-
 export default function InProgress() {
   const [details, setDetails] = useState({
     name: "",
@@ -43,13 +22,16 @@ export default function InProgress() {
     target: "R$ 0,00",
     percentage: 0,
   });
+  const [transactions, setTransactions] = useState<TransactionProps[]>([]);
   const [isFetching, setIsFetching] = useState(true);
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const targetsDatabase = useTargetDatabase();
+  const transactionsDatabase = useTransactionDatabase();
 
-  async function fetchDetails() {
+  async function fetchTargetDetails() {
     try {
+      setIsFetching(true);
       const response = await targetsDatabase.show(Number(id));
 
       setDetails({
@@ -66,10 +48,35 @@ export default function InProgress() {
     }
   }
 
-  async function fetchData() {
-    const fetchDetailsPromise = fetchDetails();
+  async function fetchTransactions() {
+    try {
+      setIsFetching(true);
 
-    await Promise.all([fetchDetailsPromise]);
+      const response = await transactionsDatabase.listByTargetId(Number(id));
+
+      setTransactions(
+        response.map((item) => ({
+          id: String(item.id),
+          type:
+            item.amount > 0 ? TransactionTypes.INPUT : TransactionTypes.OUTPUT,
+          value: numberToCurrency(item.amount),
+          date: String(item.created_at),
+          description: item.observation,
+        }))
+      );
+    } catch (error) {
+      Alert.alert("Erro", "Não possível carregar as transações da meta.");
+      console.log(error);
+    } finally {
+      setIsFetching(false);
+    }
+  }
+
+  async function fetchData() {
+    const fetchDetailsPromise = fetchTargetDetails();
+    const fetchTransactionsPromise = fetchTransactions();
+
+    await Promise.all([fetchDetailsPromise, fetchTransactionsPromise]);
   }
 
   useFocusEffect(
