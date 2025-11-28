@@ -6,15 +6,17 @@ import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
 import { PageHeader } from "@/components/PageHeader";
 import { CurrencyInput } from "@/components/CurrencyInput";
+import { useTargetDatabase } from "@/database/useTargetDatabase";
 
 export default function Target() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [name, setName] = useState("");
-  const [amount, setAmount] = useState<number | null>(0);
+  const [amount, setAmount] = useState<number>(0);
   const { id } = useLocalSearchParams<{ id?: string }>();
+  const targetDatabase = useTargetDatabase();
 
   function handleSave() {
-    if (!name.trim() || amount == null || amount <= 0) {
+    if (!name.trim() || amount <= 0) {
       return Alert.alert("Atenção", "Preencha nome e valor maior que zero.");
     }
 
@@ -29,8 +31,9 @@ export default function Target() {
     setIsProcessing(false);
   }
 
-  function create() {
+  async function create() {
     try {
+      await targetDatabase.create({ name, amount });
       Alert.alert("Nova Meta", "Meta criada com sucesso!", [
         {
           text: "Ok",
