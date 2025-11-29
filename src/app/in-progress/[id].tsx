@@ -1,9 +1,10 @@
-import { Alert, View } from "react-native";
+import { Alert, StatusBar, View } from "react-native";
 import { useCallback, useState } from "react";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 
-import { TransactionTypes } from "@/utils/TransactionTypes";
+import { formatDatetime } from "@/utils/formatDatetime";
 import { numberToCurrency } from "@/utils/numberToCurrency";
+import { TransactionTypes } from "@/utils/TransactionTypes";
 
 import { useTargetDatabase } from "@/database/useTargetDatabase";
 import { useTransactionDatabase } from "@/database/useTransactionDatabase";
@@ -14,7 +15,6 @@ import { Loading } from "@/components/Loading";
 import { Progress } from "@/components/Progress";
 import { PageHeader } from "@/components/PageHeader";
 import { Transaction, TransactionProps } from "@/components/Transaction";
-import { formatDatetime } from "@/utils/formatDatetime";
 
 export default function InProgress() {
   const [details, setDetails] = useState({
@@ -117,6 +117,8 @@ export default function InProgress() {
         gap: 32,
       }}
     >
+      <StatusBar barStyle="dark-content" />
+
       <PageHeader
         title={details.name}
         rightButton={{

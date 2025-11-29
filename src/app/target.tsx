@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, View } from "react-native";
+import { Alert, StatusBar, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 
 import { Input } from "@/components/Input";
@@ -129,6 +129,8 @@ export default function Target() {
         padding: 24,
       }}
     >
+      <StatusBar barStyle="dark-content" />
+
       <PageHeader
         title="Meta"
         subtitle="Economize para alcançar sua meta financeira."
