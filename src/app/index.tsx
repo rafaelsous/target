@@ -5,27 +5,25 @@ import { router, useFocusEffect } from "expo-router";
 import { List } from "@/components/List";
 import { Button } from "@/components/Button";
 import { Loading } from "@/components/Loading";
-import { HomeHeader } from "@/components/HomeHeader";
 import { Target, TargetProps } from "@/components/Target";
+import { HomeHeader, HomeHeaderProps } from "@/components/HomeHeader";
 
 import { numberToCurrency } from "@/utils/numberToCurrency";
 
 import { useTargetDatabase } from "@/database/useTargetDatabase";
-
-const summary = {
-  total: "R$ 22.549,76",
-  input: { label: "Entradas", value: "R$ 11.788,18" },
-  output: { label: "Saídas", value: "-R$ 2.377,83" },
-};
+import { useTransactionDatabase } from "@/database/useTransactionDatabase";
 
 export default function Index() {
   const [isFetching, setIsFetching] = useState(true);
   const [targets, setTargets] = useState<TargetProps[]>([]);
-  const database = useTargetDatabase();
+  const [summary, setSummary] = useState<HomeHeaderProps>();
+
+  const targetDatabase = useTargetDatabase();
+  const transactionDatabase = useTransactionDatabase();
 
   async function fetchTargets(): Promise<TargetProps[]> {
     try {
-      const response = await database.listBySavedValue();
+      const response = await targetDatabase.listByClosestTarget();
 
       return response.map((item) => ({
         id: String(item.id),
@@ -41,12 +39,44 @@ export default function Index() {
     }
   }
 
+  async function fetchSummary(): Promise<HomeHeaderProps> {
+    try {
+      const response = await transactionDatabase.summary();
+
+      if (!response) {
+        throw new Error("Não foi possível carregar o resumo");
+      }
+
+      return {
+        total: numberToCurrency(response.input + response.output),
+        input: {
+          label: "Entradas",
+          value: numberToCurrency(response.input),
+        },
+        output: {
+          label: "Saídas",
+          value: numberToCurrency(response.output),
+        },
+      };
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível carregar resumo.");
+      console.log(error);
+      throw error;
+    }
+  }
+
   async function fetchData() {
     const targetDataPromise = fetchTargets();
+    const summaryDataPromise = fetchSummary();
 
-    const [targetData] = await Promise.all([targetDataPromise]);
+    const [targetData, summaryData] = await Promise.all([
+      targetDataPromise,
+      summaryDataPromise,
+    ]);
 
     setTargets(targetData);
+    setSummary(summaryData);
+
     setIsFetching(false);
   }
 
@@ -67,7 +97,7 @@ export default function Index() {
       }}
     >
       <StatusBar barStyle="light-content" />
-      <HomeHeader data={summary} />
+      <HomeHeader data={summary!} />
 
       <List
         title="Metas"

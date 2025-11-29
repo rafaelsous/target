@@ -52,7 +52,7 @@ export function useTransactionDatabase() {
     return database.getFirstAsync<Summary>(`
       SELECT 
         COALESCE(SUM(CASE WHEN amount > 0 THEN amount ELSE 0 END), 0) AS input,
-        COALESCE(SUM(CASE WHEN amount < 0 THEN amount ELSE 0 END), 0) AS ouput
+        COALESCE(SUM(CASE WHEN amount < 0 THEN amount ELSE 0 END), 0) AS output
       FROM transactions
     `);
   }
